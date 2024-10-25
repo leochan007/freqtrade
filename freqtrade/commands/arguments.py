@@ -132,7 +132,15 @@ ARGS_CONVERT_TRADES = [
     "trading_mode",
 ]
 
-ARGS_LIST_DATA = ["exchange", "dataformat_ohlcv", "pairs", "trading_mode", "show_timerange"]
+ARGS_LIST_DATA = [
+    "exchange",
+    "dataformat_ohlcv",
+    "dataformat_trades",
+    "trades",
+    "pairs",
+    "trading_mode",
+    "show_timerange",
+]
 
 ARGS_DOWNLOAD_DATA = [
     "pairs",
@@ -220,6 +228,8 @@ ARGS_ANALYZE_ENTRIES_EXITS = [
     "enter_reason_list",
     "exit_reason_list",
     "indicator_list",
+    "entry_only",
+    "exit_only",
     "timerange",
     "analysis_rejected",
     "analysis_to_csv",

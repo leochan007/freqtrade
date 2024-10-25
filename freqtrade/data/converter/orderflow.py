@@ -12,7 +12,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from freqtrade.constants import DEFAULT_ORDERFLOW_COLUMNS
+from freqtrade.constants import DEFAULT_ORDERFLOW_COLUMNS, Config
 from freqtrade.enums import RunMode
 from freqtrade.exceptions import DependencyException
 
@@ -63,7 +63,7 @@ def _calculate_ohlcv_candle_start_and_end(df: pd.DataFrame, timeframe: str):
 
 def populate_dataframe_with_trades(
     cached_grouped_trades: OrderedDict[Tuple[datetime, datetime], pd.DataFrame],
-    config,
+    config: Config,
     dataframe: pd.DataFrame,
     trades: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, OrderedDict[Tuple[datetime, datetime], pd.DataFrame]]:
@@ -78,6 +78,8 @@ def populate_dataframe_with_trades(
 
     # create columns for trades
     _init_dataframe_with_trades_columns(dataframe)
+    if trades is None or trades.empty:
+        return dataframe, cached_grouped_trades
 
     try:
         start_time = time.time()
@@ -88,7 +90,7 @@ def populate_dataframe_with_trades(
         max_candles = config_orderflow["max_candles"]
         start_date = dataframe.tail(max_candles).date.iat[0]
         # slice of trades that are before current ohlcv candles to make groupby faster
-        trades = trades.loc[trades.candle_start >= start_date]
+        trades = trades.loc[trades["candle_start"] >= start_date]
         trades.reset_index(inplace=True, drop=True)
 
         # group trades by candle start

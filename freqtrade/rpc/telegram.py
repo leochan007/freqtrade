@@ -1133,7 +1133,6 @@ class Telegram(RPCHandler):
                     curr_output = (
                         f"*{curr['currency']}:*\n"
                         f"\t`{curr['side']}: {curr['position']:.8f}`\n"
-                        f"\t`Leverage: {curr['leverage']:.1f}`\n"
                         f"\t`Est. {curr['stake']}: "
                         f"{fmt_coin(curr['est_stake'], curr['stake'], False)}`\n"
                     )
@@ -1275,7 +1274,7 @@ class Telegram(RPCHandler):
                 InlineKeyboardButton(text=trade[1], callback_data=f"force_exit__{trade[0]}")
                 for trade in trades
             ]
-            buttons_aligned = self._layout_inline_keyboard_onecol(trade_buttons)
+            buttons_aligned = self._layout_inline_keyboard(trade_buttons, cols=1)
 
             buttons_aligned.append(
                 [InlineKeyboardButton(text="Cancel", callback_data="force_exit__cancel")]
@@ -1346,12 +1345,6 @@ class Telegram(RPCHandler):
     @staticmethod
     def _layout_inline_keyboard(
         buttons: List[InlineKeyboardButton], cols=3
-    ) -> List[List[InlineKeyboardButton]]:
-        return [buttons[i : i + cols] for i in range(0, len(buttons), cols)]
-
-    @staticmethod
-    def _layout_inline_keyboard_onecol(
-        buttons: List[InlineKeyboardButton], cols=1
     ) -> List[List[InlineKeyboardButton]]:
         return [buttons[i : i + cols] for i in range(0, len(buttons), cols)]
 

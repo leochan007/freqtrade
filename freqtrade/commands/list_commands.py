@@ -12,9 +12,9 @@ from freqtrade.configuration import setup_utils_configuration
 from freqtrade.enums import RunMode
 from freqtrade.exceptions import ConfigurationError, OperationalException
 from freqtrade.exchange import list_available_exchanges, market_is_active
+from freqtrade.ft_types import ValidExchangesType
 from freqtrade.misc import parse_db_uri_for_logging, plural
 from freqtrade.resolvers import ExchangeResolver, StrategyResolver
-from freqtrade.types.valid_exchanges_type import ValidExchangesType
 from freqtrade.util import print_rich_table
 
 
@@ -32,7 +32,7 @@ def start_list_exchanges(args: Dict[str, Any]) -> None:
     )
 
     if args["print_one_column"]:
-        print("\n".join([e["name"] for e in available_exchanges]))
+        print("\n".join([e["classname"] for e in available_exchanges]))
     else:
         if args["list_exchanges_all"]:
             title = (
@@ -46,14 +46,20 @@ def start_list_exchanges(args: Dict[str, Any]) -> None:
         table = Table(title=title)
 
         table.add_column("Exchange Name")
+        table.add_column("Class Name")
         table.add_column("Markets")
         table.add_column("Reason")
 
         for exchange in available_exchanges:
             name = Text(exchange["name"])
             if exchange["supported"]:
-                name.append(" (Official)", style="italic")
+                name.append(" (Supported)", style="italic")
                 name.stylize("green bold")
+            classname = Text(exchange["classname"])
+            if exchange["is_alias"]:
+                name.stylize("strike")
+                classname.stylize("strike")
+                classname.append(f" (use {exchange['alias_for']})", style="italic")
 
             trade_modes = Text(
                 ", ".join(
@@ -68,6 +74,7 @@ def start_list_exchanges(args: Dict[str, Any]) -> None:
 
             table.add_row(
                 name,
+                classname,
                 trade_modes,
                 exchange["comment"],
                 style=None if exchange["valid"] else "red",
